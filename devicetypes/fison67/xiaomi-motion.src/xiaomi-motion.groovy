@@ -30,26 +30,23 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Motion", namespace: "fison67", author: "fison67") {
+	definition (name: "Xiaomi Motion", namespace: "fison67", author: "fison67", ocfDeviceType: "x.com.st.d.sensor.motion" , vid: "generic-motion-4") {
         capability "Motion Sensor"
         capability "Illuminance Measurement"
-        capability "Configuration"
+        capability "Battery"
         capability "Sensor"
         capability "Refresh"
          
-        attribute "battery", "string"
         attribute "lastMotion", "Date"
-
         attribute "lastCheckin", "Date"
         
 		command "reset"	
         command "chartMotion"
         command "chartIlluminance"
 	}
-
-
-	simulator {
-	}
+    
+	simulator {}
+    
 	preferences {
 		input "motionReset", "number", title: "Motion Reset Time", description: "", defaultValue:120, displayDuringSetup: true
 		input "historyDayCount", "number", title: "Day for History Graph", description: "", defaultValue:1, displayDuringSetup: true
@@ -85,7 +82,7 @@ metadata {
                 ]
         }
         
-                standardTile("reset", "device.reset", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
+        standardTile("reset", "device.reset", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
             state "default", action:"reset", label: "Reset Motion", icon:"st.motion.motion.active"
         }
 
@@ -112,7 +109,17 @@ metadata {
 // parse events into attributes
 def parse(String description) {
 	log.debug "Parsing '${description}'"
+    return null
 }
+
+def ping() {
+	refresh()
+}
+
+def configure() {
+	log.debug ("configure() called")
+}
+
 
 def setExternalAddress(address){
 	log.debug "External Address >> ${address}"
@@ -167,8 +174,7 @@ def callback(physicalgraph.device.HubResponse hubResponse){
     }
 }
 
-def updated() {
-}
+def updated() {}
 
 def updateLastTime(){
 	def now = new Date().format("yyyy-MM-dd HH:mm:ss", location.timeZone)
@@ -193,7 +199,7 @@ def makeCommand(body){
      	"method": "POST",
         "path": "/control",
         "headers": [
-        	"HOST": state.app_url,
+        	"HOST": parent._getServerURL(),
             "Content-Type": "application/json"
         ],
         "body":body
@@ -265,7 +271,7 @@ def refresh(){
      	"method": "GET",
         "path": "/devices/get/${state.id}",
         "headers": [
-        	"HOST": state.app_url,
+        	"HOST": parent._getServerURL(),
             "Content-Type": "application/json"
         ]
     ]

@@ -1,5 +1,5 @@
 /**
- *  Mi Connector (v.0.0.19)
+ *  Mi Connector (v.0.0.35)
  *
  * MIT License
  *
@@ -48,6 +48,7 @@ preferences {
    page(name: "langPage")
    page(name: "remoteDevicePage")
    page(name: "remoteDeviceNextPage")
+   page(name: "versionPage")
 }
 
 
@@ -55,10 +56,11 @@ def mainPage() {
 	def languageList = ["English", "Korean"]
     dynamicPage(name: "mainPage", title: "Mi Connector", nextPage: null, uninstall: true, install: true) {
    		section("Request New Devices"){
-        	input "address", "string", title: "Server address", required: true
+        	input "address", "text", title: "Server address", required: true, description:"ex)192.168.0.100:30000"
             input(name: "selectedLang", title:"Select a language" , type: "enum", required: true, options: languageList, defaultValue: "English", description:"Language for DTH")
-            input "externalAddress", "string", title: "External network address", required: false
-        	href url:"http://${settings.externalAddress}", style:"embedded", required:false, title:"Management", description:"This makes you easy to setup"
+            input "externalAddress", "text", title: "External network address", required: false
+        	href url:"http://${settings.address}", style:"embedded", required:false, title:"Local Management", description:"This makes you easy to setup"
+        	href url:"http://${settings.externalAddress}", style:"embedded", required:false, title:"External Management", description:"This makes you easy to setup"
         }
         
         section() {
@@ -69,6 +71,10 @@ def mainPage() {
             paragraph "View this SmartApp's configuration to use it in other places."
             href url:"${apiServerUrl("/api/smartapps/installations/${app.id}/config?access_token=${state.accessToken}")}", style:"embedded", required:false, title:"Config", description:"Tap, select, copy, then click \"Done\""
        	}
+        
+        section() {
+          	href "versionPage", title: "Software Version", description:""
+       	}
     }
 }
 
@@ -77,6 +83,27 @@ def langPage(){
     	section ("Select") {
         	input "Korean",  title: "Korean", multiple: false, required: false
         }
+    }
+}
+
+def versionPage(){
+	
+	def options = [
+     	"method": "GET",
+        "path": "/settings/version",
+        "headers": [
+        	"HOST": settings.address,
+            "Content-Type": "application/json"
+        ]
+    ]
+    def myhubAction = new physicalgraph.device.HubAction(options, null, [callback: versionCallBack])
+    sendHubCommand(myhubAction)
+
+	dynamicPage(name: "versionPage", title:"", refreshInterval:5) {
+        section {
+            paragraph "Version: " + state.dockerVersion
+        }
+        
     }
 }
 
@@ -189,6 +216,9 @@ def installed() {
 def updated() {
     log.debug "Updated with settings: ${settings}"
 
+	if(settings.address.split(":").size() != 2){
+    	throw new Exception("Address must be with port number!!!.");
+    }
     // Unsubscribe from all events
 //    unsubscribe()
     // Subscribe to stuff
@@ -285,7 +315,7 @@ def initialize() {
     
     def options = [
      	"method": "POST",
-        "path": "/settings/smartthings",
+        "path": "/settings/api/smartthings",
         "headers": [
         	"HOST": settings.address,
             "Content-Type": "application/json"
@@ -348,7 +378,7 @@ def addDevice(){
         def dth = null
         def name = null
 
-        if(params.type == "zhimi.airpurifier.m1" || params.type == "zhimi.airpurifier.v1" || params.type == "zhimi.airpurifier.v2" || params.type ==  "zhimi.airpurifier.v3" || params.type ==  "zhimi.airpurifier.v6" || params.type ==  "zhimi.airpurifier.v7" || params.type ==  "zhimi.airpurifier.m2" || params.type ==  "zhimi.airpurifier.ma2" || params.type ==  "zhimi.airpurifier.mc1"){
+        if(params.type == "zhimi.airpurifier.m1" || params.type == "zhimi.airpurifier.v1" || params.type == "zhimi.airpurifier.v2" || params.type ==  "zhimi.airpurifier.v3" || params.type ==  "zhimi.airpurifier.v6" || params.type ==  "zhimi.airpurifier.v7" || params.type ==  "zhimi.airpurifier.m2" || params.type ==  "zhimi.airpurifier.ma2" || params.type ==  "zhimi.airpurifier.mc1" || params.type == "zhimi.airpurifier.sa2" || params.type == "zhimi.airpurifier.ma4"){
         	dth = "Xiaomi Air Purifier";
             name = "Xiaomi Air Purifier";
         }else if(params.type == "lumi.gateway.v2"){
@@ -378,13 +408,16 @@ def addDevice(){
         }else if(params.type == "lumi.cube" || params.type == "lumi.cube.aq2"){
         	dth = "Xiaomi Cube";
             name = "Xiaomi Cube";
-        }else if(params.type == "zhimi.humidifier.v1" || params.type == "zhimi.humidifier.ca1"){
+        }else if(params.type == "zhimi.humidifier.v1" || params.type == "zhimi.humidifier.ca1" || params.type == "zhimi.humidifier.cb2"){
         	dth = "Xiaomi Humidifier";
             name = "Xiaomi Humidifier";
         }else if(params.type == "shuii.humidifier.jsq001"){
         	dth = "Xiaomi Humidifier 3";
             name = "Xiaomi Humidifier 3";
-       	}else if(params.type == "zhimi.fan.v1" || params.type == "zhimi.fan.v2" || params.type == "zhimi.fan.v3" || params.type == "zhimi.fan.sa1" || params.type == "zhimi.fan.za1"){	
+       	}else if(params.type == "deerma.humidifier.mjjsq"){
+        	dth = "Xiaomi Humidifier 4";
+            name = "Xiaomi Humidifier 4";
+       	}else if(params.type == "zhimi.fan.v1" || params.type == "zhimi.fan.v2" || params.type == "zhimi.fan.v3" || params.type == "zhimi.fan.sa1" || params.type == "zhimi.fan.za1" || params.type == "zhimi.fan.za3" || params.type == "zhimi.fan.za4" || params.type == "dmaker.fan.p5"){	
         	dth = "Xiaomi Fan";	
             name = "Xiaomi Fan";	
         }else if(params.type == "yeelink.light.color1" || params.type == "yeelink.light.color2" || params.type == "yeelink.light.bslamp1" || params.type == "yeelink.light.bslamp2"){
@@ -402,10 +435,13 @@ def addDevice(){
         }else if(params.type == "philips.light.sread1" || params.type == "philips.light.bulb"){
         	dth = "Xiaomi Light";
             name = "Philips Light";
-        }else if(params.type == "rockrobo.vacuum.v1" || params.type == "roborock.vacuum.c1"){
+        }else if(params.type == "philips.light.moonlight"){
+        	dth = "Xiaomi Philips Bedside Lamp";
+            name = "Xiaomi Philips Bedside Lamp";
+        }else if(params.type == "rockrobo.vacuum.v1" || params.type == "roborock.vacuum.c1" || params.type == "roborock.vacuum.m1s" || params.type == "roborock.vacuum.s6" || params.type == "viomi.vacuum.v7"){
         	dth = "Xiaomi Vacuums";
             name = "Xiaomi Vacuums";
-        }else if(params.type == "roborock.vacuum.s5"){
+        }else if(params.type == "roborock.vacuum.s5" || params.type == "roborock.vacuum.s6"){
         	dth = "Xiaomi Vacuums2";
             name = "Xiaomi Vacuums2";
         }else if(params.type == "qmi.powerstrip.v1" || params.type == "zimi.powerstrip.v2"){
@@ -429,7 +465,7 @@ def addDevice(){
         }else if(params.type == "zhimi.airmonitor.v1"){
         	dth = "Xiaomi Air Monitor";
             name = "Xiaomi Air Monitor";
-        }else if(params.type == "cgllc.airmonitor.b1"){
+        }else if(params.type == "cgllc.airmonitor.b1" || params.type == "cgllc.airmonitor.s1"){
         	dth = "Xiaomi Air Detector";
             name = "Xiaomi Air Detector";
         }else if(params.type == "lumi.weather"){
@@ -439,8 +475,8 @@ def addDevice(){
 			dth = "Xiaomi Gas Detector";
             name = "Xiaomi Gas Dectector";
 		}else if(params.type == "lumi.smoke"){
-        	dth = "Xiaomi Smoke Dectector";
-            name = "Xiaomi Smoke Dectector";
+        	dth = "Xiaomi Smoke Detector";
+            name = "Xiaomi Smoke Detector";
         }else if(params.type == "yeelink.light.ceiling1" || params.type == "yeelink.light.ceiling2"|| params.type == "yeelink.light.ceiling3"|| params.type == "yeelink.light.ceiling4" || params.type == "yeelink.light.ceiling5"|| params.type == "yeelink.light.ceiling6"){
         	dth = "Xiaomi Light Ceiling";
             name = "Xiaomi Light Ceiling";
@@ -450,6 +486,9 @@ def addDevice(){
         }else if(params.type == "lumi.curtain"){
         	dth = "Xiaomi Curtain";
             name = "Xiaomi Curtain";
+        }else if(params.type == "lumi.curtain.b1"){
+        	dth = "Xiaomi Curtain2";
+            name = "Xiaomi Curtain B1";
         }else if(params.type == "lumi.water"){
 			dth = "Xiaomi Water Detector";
             name = "Xiaomi Water Dectector";
@@ -462,7 +501,7 @@ def addDevice(){
 		}else if(params.type == "ble.floraPot"){
 			dth = "Xiaomi Flora Pot";
             name = "Xiaomi Flora Pot";
-		}else if(params.type == "chuangmi.ir.v2"){
+		}else if(params.type == "chuangmi.ir.v2" || params.type == "chuangmi.remote.h102a03" || params.type == "chuangmi.remote.v2"){
 			dth = "Xiaomi Remote";
             name = "Xiaomi Remote";
 		}else if(params.type == "virtual.remote.tv"){
@@ -480,7 +519,7 @@ def addDevice(){
         }else if(params.type == "lumi.acpartner.v3"){
         	dth = "Xiaomi Gateway2";
             name = "Xiaomi Gateway2";
-        }else if(params.type == "ble.mitemperature"){
+        }else if(params.type == "ble.mitemperature" || params.type == "ble.einktemperature"){
         	dth = "Xiaomi Bluetooth Weather";
             name = "Xiaomi Bluetooth Weather";
         }else if(params.type == "lumi.vibration"){
@@ -489,7 +528,16 @@ def addDevice(){
         }else if(params.type == "zhimi.heater.za1"){
         	dth = "Xiaomi Heater"
             name = "Xiaomi Heater"
-        }
+        }else if(params.type == "zhimi.airfresh.va2"){
+        	dth = "Xiaomi Air Fresh"
+            name = "Xiaomi Air Fresh"
+        }else if(params.type == "air.fan.ca23ad9"){
+        	dth = "Xiaomi Circulator"
+            name = "Xiaomi Circulator"
+        }else if(params.type == "nwt.derh.wdh318efw1"){
+        	dth = "Xiaomi Dehumidifier"
+            name = "Xiaomi Dehumidifier"
+        }	
         
         
         if(dth == null){
@@ -575,6 +623,10 @@ def addDevice(){
     
 }
 
+def _getServerURL(){
+     return settings.address
+}
+
 def updateDevice(){
 //	log.debug "Mi >> ${params.type} (${params.key}) >> ${params.cmd}"
     def id = params.id
@@ -649,6 +701,18 @@ def getLocationID(){
     try{ locationID = location.hubs[0].id }catch(err){}
     return locationID
 }
+
+def versionCallBack(physicalgraph.device.HubResponse hubResponse) {
+    def msg, json, status
+    try {
+        msg = parseLanMessage(hubResponse.description)
+        log.debug "${msg.body}"
+        state.dockerVersion = msg.body
+    } catch (e) {
+        logger('warn', "Exception caught while parsing data: "+e);
+    }
+}
+
 
 mappings {
     if (!params.access_token || (params.access_token && params.access_token != state.accessToken)) {

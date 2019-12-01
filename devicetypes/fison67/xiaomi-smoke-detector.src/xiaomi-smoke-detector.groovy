@@ -1,5 +1,5 @@
 /**
- *  Xiaomi Smoke Dectector (v.0.0.1)
+ *  Xiaomi Smoke Detector (v.0.0.1)
  *
  * MIT License
  *
@@ -30,15 +30,14 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Smoke Detector", namespace: "fison67", author: "fison67") {
+	definition (name: "Xiaomi Smoke Detector", namespace: "fison67", author: "fison67", vid : "SmartThings-smartthings-Xiaomi_Honeywell_Smoke_Detector", ocfDeviceType: "x.com.st.d.sensor.smoke") {
         capability "Sensor"
         capability "Smoke Detector"    //"detected", "clear", "tested"
+        capability "Battery"
+        capability "Refresh"
          
-        attribute "battery", "string"
         attribute "density", "string"        
         attribute "lastCheckin", "Date"
-        
-        command "refresh"
 	}
 
 
@@ -123,6 +122,10 @@ def callback(physicalgraph.device.HubResponse hubResponse){
     }
 }
 
+def installed() {
+	sendEvent(name:"smoke", value: "clear") 
+}
+
 def updated() {
 }
 
@@ -132,7 +135,7 @@ def refresh(){
      	"method": "GET",
         "path": "/devices/get/${state.id}",
         "headers": [
-        	"HOST": state.app_url,
+        	"HOST": parent._getServerURL(),
             "Content-Type": "application/json"
         ]
     ]
@@ -149,7 +152,7 @@ def makeCommand(body){
      	"method": "POST",
         "path": "/control",
         "headers": [
-        	"HOST": state.app_url,
+        	"HOST": parent._getServerURL(),
             "Content-Type": "application/json"
         ],
         "body":body

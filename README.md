@@ -7,7 +7,7 @@ You don't have to do anything to add Xiaomi devices in SmartThings IDE.
 
 Please see the [prerequisites](#prerequisites) needed for this connector to work properly.
 
-> Hubitat? Use the following repo: https://github.com/fison67/Mi-Connector-Hubitat
+> Hubitat? Use the following branch: https://github.com/fison67/mi_connector/tree/hubitat
 
 ### Example Video<br/>
 [![Example](https://img.youtube.com/vi/CtPce-KBVcY/0.jpg)](https://www.youtube.com/watch?v=CtPce-KBVcY)
@@ -55,6 +55,12 @@ If this project helps you, you can give me a cup of coffee<br/>
 
 # Release Notes
 
+### Version: 0.0.4
+```
+Added a function to add a device by db file.
+Added support devices.
+```
+
 ### Version: 0.0.3
 ```
 Added a graph in DTH & Web. [ Important!!! You must install a DB. ]
@@ -100,8 +106,10 @@ Added support devices.
 |   | zhimi.airpurifier.v7  |   X |    |
 |   | zhimi.airpurifier.mc1  |   X |    |
 |   | zhimi.airpurifier.ma2  |   X |    |
+| Xiaomi Air Fresh  | zhimi.airfresh.va2  |   X |  O |
 | Xiaomi Humidifier  | zhimi.humidifier.v1  |   X |    |
 |   | zhimi.humidifier.ca1  |   O |    |
+|   | zhimi.humidifier.cb2  |   X |    |
 |   | shuii.humidifier.jsq001  |   O |  O  |
 | Xiaomi Vacuum  | rockrobo.vacuum.v1  |   O |    |
 |   | roborock.vacuum.c1  |   X |    |
@@ -122,20 +130,29 @@ Added support devices.
 |   | zhimi.fan.v3  |   O |    |
 |   | zhimi.fan.sa1  |   X |  O |
 |   | zhimi.fan.za1  |   O |  O |
+|   | air.fan.ca23ad9  |   O |  O |
 | Yeelight Mono  | yeelink.light.lamp1  |   X |    |
 |   | yeelink.light.mono1  |   O |    |
 |   | yeelink.light.ct2  |   O |    |
 | Yeelight Color  | yeelink.light.color1  |   O |    |
 |   | yeelink.light.color2  |   O |    |
 |   | yeelink.light.strip1  |   O |    |
+|   | yeelink.light.strip2  |   O |    |
 | Bedside Lamp  | yeelink.light.bslamp1  |   O |   O |
+|   | yeelink.light.bslamp2  |   X |   O |
 |  Yeelight Ceiling | yeelink.light.ceiling1  |   O |    |
 |   | yeelink.light.ceiling2  |   O |    |
+|   | yeelink.light.ceiling3  |   O |    |
+|   | yeelink.light.ceiling4  |   O |    |
+|   | yeelink.light.ceiling5  |   O |    |
 |   | yeelink.light.ceiling6  |   O |    |
 |  Philips Ceiling | philips.light.ceiling  |   O |    |
 |   | philips.light.zyceiling  |   O |    |
 | Philips Downlight  | philips.light.downlight  |   O |    |
+| Philips Bedside Lamp  | philips.light.moonlight  |   O |   O |
 |  Xiaomi IR Remote | chuangmi.ir.v2  |   △ |  O |
+|   | chuangmi.remote.h102a03  |   △ |  O |
+|   | chuangmi.remote.v2  |   △ |  O |
 |  Xiaomi Heater | zhimi.heater.za1  |   O |  O |
 
 ### Zigbee Devices
@@ -167,6 +184,7 @@ Added support devices.
 | Xiaomi Flora | ble.flora  |  △  |  O  |
 | Xiaomi Flora Pot | ble.floraPot  |  △  |  O  |
 | Xiaomi Temp-Humid Sensor | ble.mitemperature  |  △  |  O  |
+| Xiaomi E-Ink Temp-Humid Sensor | ble.einktemperature  |  △  |  O  |
 
 <img src="./imgs/product/button.jpg" title="Button" width="200px"><img src="./imgs/product/button_aq.png" title="Button Aqara" width="200px"><img src="./imgs/product/cube.png" title="Cube" width="200px">
 <img src="./imgs/product/door.jpg" title="Door" width="200px"><img src="./imgs/product/door_aq.png" title="Door Aqara" width="200px"><img src="./imgs/product/fire.jpg" title="Fire Sensor" width="200px">
@@ -197,7 +215,11 @@ Added support devices.
 <img src="./imgs/product/xiaomi-ceiling-light-pro.png?raw=true" title="Xiaomi Ceiling Light Pro" width="200px">
 <img src="./imgs/product/xiaomi-humidifier-3.jpg?raw=true" title="Xiaomi Humidifier 3" width="200px">
 <img src="./imgs/product/xiaomi-bedside-lamp.jpeg?raw=true" title="Xiaomi Bedside Lamp" width="200px">
-
+<img src="./imgs/product/xiaomi-bedside-lamp-2.jpg?raw=true" title="Xiaomi Bedside Lamp2" width="200px">
+<img src="./imgs/product/philips-bedside-lamp.jpg?raw=true" title="Xiaomi Philips Bedside Lamp" width="200px">
+<img src="./imgs/product/xiaomi-air-fresh.jpg?raw=true" title="Xiaomi Air Fresh" width="200px">
+<img src="./imgs/product/xiaomi-eink-temperature.jpeg?raw=true" title="Xiaomi E-Ink Temperatre" width="200px">
+<img src="./imgs/product/xiaomi-circulator.png?raw=true" title="Xiaomi Circulator" width="200px">
 
 
 # Installation
@@ -216,11 +238,6 @@ Added support devices.
 |fison67/mi-connector:latest|
 |fison67/mi-connector-arm:latest|
 
-### Beta Versions
-| Docker tag |
-| ------------- |
-|fison67/mi-connector:test2|
-|fison67/mi-connector-arm:test2|
 
 ## Install Mi Connector API Server
 ### Raspberry Pi
@@ -415,7 +432,20 @@ Step 3 and 4 are only needed if the repo has not been added earlier (e.g. in the
 7. From the same screen open the Local Area Network Communication Protocol screen
 8. Slide the toggle element for “Local Area Network Communication Protocol” to enabled<br/>
 <img src="https://www.domoticz.com/wiki/images/4/41/Mihome_lan.png">
-9. Restart Mi Connector and then register gateway.
+9. Restart Mi Connector and then register gateway.<br/>
+10. If you do step by step, but zigbee device is not working<br/>
+install a nmap first.<br/>
+sudo nmap -sU gatewayip -p 9898, 4321<br/>
+..................................<br/>
+PORT     STATE         SERVICE<br/>
+4321/udp open|filtered rwhois<br/>
+9898/udp open          monkeycom<br/><br/>
+..................................<br/>
+If Port is closed xiaomi gateway doesn't report zigbee status to mi connector anymore.<br/>
+You have to buy new one and enable a lan protocol first, don't firmware update first!!!<br/>
+Or have a look this link<br/>
+https://community.openhab.org/t/solved-openhab2-xiaomi-mi-gateway-does-not-respond/52963/114<br/>
+<br/><br/>
 
 ### When you can't control device on ST
 > Maybe you put the server address on SmartApp (Mi Connector)<br/>

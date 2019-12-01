@@ -1,5 +1,5 @@
 /**
- *  Xiaomi Vacuums (v.0.0.2)
+ *  Xiaomi Vacuums (v.0.0.3)
  *
  * MIT License
  *
@@ -30,13 +30,15 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Vacuums", namespace: "fison67", author: "fison67") {
+	definition (name: "Xiaomi Vacuums", namespace: "fison67", author: "fison67", vid: "generic-switch", ocfDeviceType: "oic.d.switch") {
+    	capability "Robot Cleaner Cleaning Mode"
         capability "Switch"		
 		capability "Fan Speed"
         capability "Battery"	
         capability "Refresh"	
         
         attribute "status", "string"
+        attribute "mode", "string"
         attribute "cleanTime", "string"
         attribute "cleanArea", "NUMBER"
         attribute "in_cleaning", "string"
@@ -63,6 +65,10 @@ metadata {
         command "setVolumeWithTest"
 	}
 
+    preferences {
+        input name: "offOption", title:"OFF Option" , type: "enum", required: true, options: ["off", "return"], defaultValue: "off"
+	}
+    
 	simulator {}
 
 	tiles {
@@ -237,12 +243,16 @@ def setStatus(params){
  	switch(params.key){
     case "mode":
     	sendEvent(name:"mode", value: params.data )
-        if(params.data == "paused"){
-    		sendEvent(name:"switch", value: "paused" )
+        if(params.data == "cleaning"){
+        	sendEvent(name:"switch", value: "on", displayed: false)
+        	sendEvent(name:"robotCleanerCleaningMode", value: "auto", displayed: false)
+        }else{
+        	sendEvent(name:"switch", value: "off", displayed: false)
+        	sendEvent(name:"robotCleanerCleaningMode", value: "stop", displayed: false)
         }
     	break;
     case "batteryLevel":
-    	sendEvent(name:"battery", value: params.data)
+    	sendEvent(name:"battery", value: params.data, displayed: false)
     	break;
     case "fanSpeed":
     	def val = params.data.toInteger()
@@ -264,8 +274,8 @@ def setStatus(params){
     	sendEvent(name:"fanSpeed_label", value: _value )
     	break;
     case "cleaning":
-    	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off") )
-       	sendEvent(name:"paused", value: params.data == "true" ? "paused" : "restart" )     
+    	sendEvent(name:"switch", value: (params.data == "true" ? "on" : "off"), displayed: false )
+       	sendEvent(name:"paused", value: params.data == "true" ? "paused" : "restart", displayed: false )     
     	break;
     case "volume":
     	sendEvent(name:"volume", value: params.data )
@@ -302,6 +312,17 @@ def setStatus(params){
     updateLastTime()
 }
 
+def setRobotCleanerCleaningMode(mode){
+	switch(mode){
+    case "auto":
+    	on()
+    	break
+    case "stop":
+    	off()
+    	break
+    }
+}
+
 public String formatSeconds(int timeInSeconds){
     int secondsLeft = timeInSeconds % 3600 % 60;
     int minutes = Math.floor(timeInSeconds % 3600 / 60);
@@ -325,7 +346,7 @@ def refresh(){
      	"method": "GET",
         "path": "/devices/get/${state.id}",
         "headers": [
-        	"HOST": state.app_url,
+        	"HOST": parent._getServerURL(),
             "Content-Type": "application/json"
         ]
     ]
@@ -446,8 +467,7 @@ def find(){
     sendCommand(options, null)
 }
 
-def on(){
-		log.debug "On >> ${state.id}"
+def clean(){
     def body = [
         "id": state.id,
         "cmd": "clean"
@@ -456,14 +476,23 @@ def on(){
     sendCommand(options, null)
 }
 
+def on(){
+    log.debug "On >> ${state.id}"
+    clean()
+}
+
 def off(){
-	log.debug "Off >> ${state.id}"
-	def body = [
-        "id": state.id,
-        "cmd": "stop"
-    ]
-    def options = makeCommand(body)
-    sendCommand(options, null)
+	if(offOption == "off"){
+        log.debug "Off >> ${state.id}"
+        def body = [
+            "id": state.id,
+            "cmd": "stop"
+        ]
+        def options = makeCommand(body)
+        sendCommand(options, null)
+    }else{
+    	charge()
+    }
 }
 
 /*
@@ -557,7 +586,7 @@ def makeCommand(body){
      	"method": "POST",
         "path": "/control",
         "headers": [
-        	"HOST": state.app_url,
+        	"HOST": parent._getServerURL(),
             "Content-Type": "application/json"
         ],
         "body":body

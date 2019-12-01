@@ -64,7 +64,7 @@ LANGUAGE_MAP = [
 ]
 
 metadata {
-	definition (name: "xiaomi weather", namespace: "fison67", author: "fison67") {
+	definition (name: "xiaomi weather", namespace: "fison67", author: "fison67", vid: "SmartThings-smartthings-Xiaomi_Temperature_Humidity_Sensor", ocfDeviceType: "oic.d.thermostat") {
         capability "Temperature Measurement"
         capability "Relative Humidity Measurement"
         capability "Sensor"
@@ -379,7 +379,7 @@ def refresh(){
      	"method": "GET",
         "path": "/devices/get/${state.id}",
         "headers": [
-        	"HOST": state.app_url,
+        	"HOST": parent._getServerURL(),
             "Content-Type": "application/json"
         ]
     ]

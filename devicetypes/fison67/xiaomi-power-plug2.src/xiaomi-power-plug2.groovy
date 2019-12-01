@@ -31,7 +31,7 @@
 import groovy.json.JsonSlurper
 
 metadata {
-	definition (name: "Xiaomi Power Plug2", namespace: "fison67", author: "fison67", mnmn:"SmartThings", vid: "generic-switch-power-energy", ocfDeviceType: "x.com.st.d.energymeter") {
+	definition (name: "Xiaomi Power Plug2", namespace: "fison67", author: "fison67", vid: "generic-switch-power", ocfDeviceType: "oic.d.smartplug") {
         capability "Switch"
         capability "Power Meter"
         capability "Temperature Measurement"
@@ -39,6 +39,8 @@ metadata {
         capability "Outlet"
         capability "Refresh"
         
+        attribute "led", "string"
+		attribute "usb", "string"
         attribute "lastCheckin", "Date"
         
         command "usbOn"
@@ -204,7 +206,7 @@ def refresh(){
      	"method": "GET",
         "path": "/devices/get/${state.id}",
         "headers": [
-        	"HOST": state.app_url,
+        	"HOST": parent._getServerURL(),
             "Content-Type": "application/json"
         ]
     ]
@@ -239,7 +241,7 @@ def makeCommand(body){
      	"method": "POST",
         "path": "/control",
         "headers": [
-        	"HOST": state.app_url,
+        	"HOST": parent._getServerURL(),
             "Content-Type": "application/json"
         ],
         "body":body
