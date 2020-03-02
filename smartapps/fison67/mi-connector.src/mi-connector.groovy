@@ -1,5 +1,5 @@
 /**
- *  Mi Connector (v.0.0.35)
+ *  Mi Connector (v.0.0.43)
  *
  * MIT License
  *
@@ -378,7 +378,7 @@ def addDevice(){
         def dth = null
         def name = null
 
-        if(params.type == "zhimi.airpurifier.m1" || params.type == "zhimi.airpurifier.v1" || params.type == "zhimi.airpurifier.v2" || params.type ==  "zhimi.airpurifier.v3" || params.type ==  "zhimi.airpurifier.v6" || params.type ==  "zhimi.airpurifier.v7" || params.type ==  "zhimi.airpurifier.m2" || params.type ==  "zhimi.airpurifier.ma2" || params.type ==  "zhimi.airpurifier.mc1" || params.type == "zhimi.airpurifier.sa2" || params.type == "zhimi.airpurifier.ma4"){
+        if(params.type == "zhimi.airpurifier.m1" || params.type == "zhimi.airpurifier.v1" || params.type == "zhimi.airpurifier.v2" || params.type ==  "zhimi.airpurifier.v3" || params.type ==  "zhimi.airpurifier.v6" || params.type ==  "zhimi.airpurifier.v7" || params.type ==  "zhimi.airpurifier.m2" || params.type ==  "zhimi.airpurifier.ma2" || params.type ==  "zhimi.airpurifier.mc1" || params.type == "zhimi.airpurifier.sa2" || params.type == "zhimi.airpurifier.ma4" || params.type == "zhimi.airpurifier.mb3"){
         	dth = "Xiaomi Air Purifier";
             name = "Xiaomi Air Purifier";
         }else if(params.type == "lumi.gateway.v2"){
@@ -408,7 +408,7 @@ def addDevice(){
         }else if(params.type == "lumi.cube" || params.type == "lumi.cube.aq2"){
         	dth = "Xiaomi Cube";
             name = "Xiaomi Cube";
-        }else if(params.type == "zhimi.humidifier.v1" || params.type == "zhimi.humidifier.ca1" || params.type == "zhimi.humidifier.cb2"){
+        }else if(params.type == "zhimi.humidifier.v1" || params.type == "zhimi.humidifier.ca1" || params.type == "zhimi.humidifier.cb2" || params.type ==  "zhimi.humidifier.cb1"){
         	dth = "Xiaomi Humidifier";
             name = "Xiaomi Humidifier";
         }else if(params.type == "shuii.humidifier.jsq001"){
@@ -432,16 +432,22 @@ def addDevice(){
         }else if(params.type == "philips.light.downlight"){
         	dth = "Xiaomi Philips Downlight";
             name = "Xiaomi Philips Downlight";
-        }else if(params.type == "philips.light.sread1" || params.type == "philips.light.bulb"){
+        }else if(params.type == "philips.light.bulb"){
         	dth = "Xiaomi Light";
             name = "Philips Light";
+        }else if(params.type == "philips.light.sread1"){
+        	dth = "Xiaomi Philips Sread";
+            name = "Xiaomi Philips Sread";
         }else if(params.type == "philips.light.moonlight"){
         	dth = "Xiaomi Philips Bedside Lamp";
             name = "Xiaomi Philips Bedside Lamp";
-        }else if(params.type == "rockrobo.vacuum.v1" || params.type == "roborock.vacuum.c1" || params.type == "roborock.vacuum.m1s" || params.type == "roborock.vacuum.s6" || params.type == "viomi.vacuum.v7"){
+        }else if(params.type == "rockrobo.vacuum.v1" || params.type == "roborock.vacuum.c1" || params.type == "roborock.vacuum.m1s" || params.type == "roborock.vacuum.s6"){
         	dth = "Xiaomi Vacuums";
             name = "Xiaomi Vacuums";
-        }else if(params.type == "roborock.vacuum.s5" || params.type == "roborock.vacuum.s6"){
+        }else if(params.type == "viomi.vacuum.v6" || params.type == "viomi.vacuum.v7"){
+        	dth = "Xiaomi Vacuum Viomi";
+            name = "Xiaomi Vacuum Viomi";
+        }else if(params.type == "roborock.vacuum.s5" || params.type == "roborock.vacuum.s5e" || params.type == "roborock.vacuum.s6"){
         	dth = "Xiaomi Vacuums2";
             name = "Xiaomi Vacuums2";
         }else if(params.type == "qmi.powerstrip.v1" || params.type == "zimi.powerstrip.v2"){
@@ -477,7 +483,7 @@ def addDevice(){
 		}else if(params.type == "lumi.smoke"){
         	dth = "Xiaomi Smoke Detector";
             name = "Xiaomi Smoke Detector";
-        }else if(params.type == "yeelink.light.ceiling1" || params.type == "yeelink.light.ceiling2"|| params.type == "yeelink.light.ceiling3"|| params.type == "yeelink.light.ceiling4" || params.type == "yeelink.light.ceiling5"|| params.type == "yeelink.light.ceiling6"){
+        }else if(params.type == "yeelink.light.ceiling1" || params.type == "yeelink.light.ceiling2"|| params.type == "yeelink.light.ceiling3"|| params.type == "yeelink.light.ceiling4" || params.type == "yeelink.light.ceiling5"|| params.type == "yeelink.light.ceiling6"|| params.type == "yeelink.light.ceiling7"|| params.type == "yeelink.light.ceiling8"|| params.type == "yeelink.light.ceiling9" || params.type == "yeelink.light.ceiling14"){
         	dth = "Xiaomi Light Ceiling";
             name = "Xiaomi Light Ceiling";
         }else if(params.type == "philips.light.ceiling" || params.type == "philips.light.zyceiling"){
@@ -489,6 +495,9 @@ def addDevice(){
         }else if(params.type == "lumi.curtain.b1"){
         	dth = "Xiaomi Curtain2";
             name = "Xiaomi Curtain B1";
+        }else if(params.type == "lumi.blind"){
+        	dth = "Xiaomi Curtain";
+            name = "Xiaomi Blind";
         }else if(params.type == "lumi.water"){
 			dth = "Xiaomi Water Detector";
             name = "Xiaomi Water Dectector";

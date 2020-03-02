@@ -55,6 +55,11 @@ If this project helps you, you can give me a cup of coffee<br/>
 
 # Release Notes
 
+### Version: 0.0.5
+```
+Added support devices.
+```
+
 ### Version: 0.0.4
 ```
 Added a function to add a device by db file.
@@ -106,14 +111,25 @@ Added support devices.
 |   | zhimi.airpurifier.v7  |   X |    |
 |   | zhimi.airpurifier.mc1  |   X |    |
 |   | zhimi.airpurifier.ma2  |   X |    |
+|   | zhimi.airpurifier.ma4  |   O |    |
+|   | zhimi.airpurifier.sa2  |   △ |    |
+|   | zhimi.airpurifier.mb3  |   △ |    |
 | Xiaomi Air Fresh  | zhimi.airfresh.va2  |   X |  O |
 | Xiaomi Humidifier  | zhimi.humidifier.v1  |   X |    |
 |   | zhimi.humidifier.ca1  |   O |    |
 |   | zhimi.humidifier.cb2  |   X |    |
 |   | shuii.humidifier.jsq001  |   O |  O  |
+|   | deerma.humidifier.mjjsq  |   O |  O  |
+| Xiaomi Dehumidifier  | nwt.derh.wdh318efw1  |   X |    |
 | Xiaomi Vacuum  | rockrobo.vacuum.v1  |   O |    |
 |   | roborock.vacuum.c1  |   X |    |
 |   | roborock.vacuum.s5  |   X |    |
+|   | roborock.vacuum.s6  |   X |    |
+|   | roborock.vacuum.s5e  |   X |    |
+|   | roborock.vacuum.m1s  |   X |    |
+|   | roborock.vacuum.e2  |   X |    |
+|   | viomi.vacuum.v6  |   X |    |
+|   | viomi.vacuum.v7  |   X |    |
 | Xiaomi Power Socket  | chuangmi.plug.v1  |   X |    |
 |   | chuangmi.plug.v2  |   X |    |
 |   | chuangmi.plug.v3  |   O |  O  |
@@ -146,10 +162,15 @@ Added support devices.
 |   | yeelink.light.ceiling4  |   O |    |
 |   | yeelink.light.ceiling5  |   O |    |
 |   | yeelink.light.ceiling6  |   O |    |
+|   | yeelink.light.ceiling7  |   △ |    |
+|   | yeelink.light.ceiling8  |   △ |    |
+|   | yeelink.light.ceiling9  |   △ |    |
+|   | yeelink.light.ceiling14  |   △ |    |
 |  Philips Ceiling | philips.light.ceiling  |   O |    |
 |   | philips.light.zyceiling  |   O |    |
 | Philips Downlight  | philips.light.downlight  |   O |    |
 | Philips Bedside Lamp  | philips.light.moonlight  |   O |   O |
+| Philips Light  | philips.light.sread1  |   △ |    |
 |  Xiaomi IR Remote | chuangmi.ir.v2  |   △ |  O |
 |   | chuangmi.remote.h102a03  |   △ |  O |
 |   | chuangmi.remote.v2  |   △ |  O |
